@@ -389,6 +389,7 @@ class ExLlamaV2DynamicGenerator:
             self.page_size = self.max_seq_len
             self.max_total_tokens = self.max_seq_len
             self.max_pages = max(self.max_seq_len // self.page_size, 1)
+            self.reset_page_table()
 
         # Chunking
 
