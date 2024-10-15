@@ -239,7 +239,7 @@ class ExLlamaV2DynamicGenerator:
     def __init__(
         self,
         model: ExLlamaV2,
-        cache: ExLlamaV2CacheBase,
+        cache: ExLlamaV2CacheBase | None = None,
         tokenizer: ExLlamaV2Tokenizer,
         max_batch_size: int = None,
         max_seq_len: int | None = None,
@@ -374,17 +374,19 @@ class ExLlamaV2DynamicGenerator:
         # Initialize cache/page table
 
         self.paged = paged
-        self.page_size = PAGED_PAGE_SIZE if paged else self.cache.max_seq_len
+        if self.paged:
+            self.page_size = PAGED_PAGE_SIZE if paged else self.cache.max_seq_len
 
-        assert cache.batch_size == 1, \
-            f"DynamicGenerator requires cache to have batch_size = 1"
+            assert cache.batch_size == 1, \
+                f"DynamicGenerator requires cache to have batch_size = 1"
 
-        assert self.cache.max_seq_len % PAGED_PAGE_SIZE == 0, \
-            f"cache.max_seq_len must be multiple of {PAGED_PAGE_SIZE}, received {cache.max_seq_len}"
-        self.max_pages = max(cache.max_seq_len // self.page_size, 1)
-        self.max_total_tokens = cache.max_seq_len
-
-        self.reset_page_table()
+            assert self.cache.max_seq_len % PAGED_PAGE_SIZE == 0, \
+                f"cache.max_seq_len must be multiple of {PAGED_PAGE_SIZE}, received {cache.max_seq_len}"
+            self.max_pages = max(cache.max_seq_len // self.page_size, 1)
+            self.max_total_tokens = cache.max_seq_len
+            self.reset_page_table()
+        else:
+            self.max_total_tokens = self.max_seq_len
 
         # Chunking
 
