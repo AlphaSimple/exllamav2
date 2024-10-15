@@ -239,7 +239,7 @@ class ExLlamaV2DynamicGenerator:
     def __init__(
         self,
         model: ExLlamaV2,
-        cache: ExLlamaV2CacheBase | None = None,
+        cache: ExLlamaV2CacheBase | None,
         tokenizer: ExLlamaV2Tokenizer,
         max_batch_size: int = None,
         max_seq_len: int | None = None,
